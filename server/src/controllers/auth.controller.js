@@ -1,10 +1,16 @@
 import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
+import jwt from "jsonwebtoken";
+
 import db from "../db/index.js";
 import { users } from "../db/schema.js";
-import { registerSchema } from "../validators/auth.validator.js";
-import jwt from "jsonwebtoken";
-import { loginSchema } from "../validators/auth.validator.js";
+
+import {
+  registerSchema,
+  loginSchema,
+} from "../validators/auth.validator.js";
+
+const isProduction = process.env.NODE_ENV === "production";
 
 export const register = async (req, res, next) => {
   try {
@@ -21,18 +27,24 @@ export const register = async (req, res, next) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(data.password, 10);
+    const hashedPassword = await bcrypt.hash(
+      data.password,
+      10
+    );
 
-    const [user] = await db.insert(users).values({
-      fullName: data.fullName,
-      email: data.email,
-      password: hashedPassword,
-    }).returning({
-      id: users.id,
-      fullName: users.fullName,
-      email: users.email,
-      createdAt: users.createdAt,
-    });
+    const [user] = await db
+      .insert(users)
+      .values({
+        fullName: data.fullName,
+        email: data.email,
+        password: hashedPassword,
+      })
+      .returning({
+        id: users.id,
+        fullName: users.fullName,
+        email: users.email,
+        createdAt: users.createdAt,
+      });
 
     return res.status(201).json({
       success: true,
@@ -59,7 +71,10 @@ export const login = async (req, res, next) => {
       });
     }
 
-    const isPasswordValid = await bcrypt.compare(data.password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      data.password,
+      user.password
+    );
 
     if (!isPasswordValid) {
       return res.status(401).json({
@@ -69,18 +84,22 @@ export const login = async (req, res, next) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      {
+        id: user.id,
+        email: user.email,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      }
     );
 
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "lax",
-      secure: false,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-
 
     return res.status(200).json({
       success: true,
@@ -96,7 +115,11 @@ export const login = async (req, res, next) => {
   }
 };
 
-export const getCurrentUser = async (req, res, next) => {
+export const getCurrentUser = async (
+  req,
+  res,
+  next
+) => {
   try {
     const user = await db
       .select({
@@ -106,7 +129,10 @@ export const getCurrentUser = async (req, res, next) => {
         currency: users.currency,
         timezone: users.timezone,
         createdAt: users.createdAt,
-      }).from(users).where(eq(users.id, req.user.id)).limit(1);
+      })
+      .from(users)
+      .where(eq(users.id, req.user.id))
+      .limit(1);
 
     if (!user.length) {
       return res.status(404).json({
@@ -127,8 +153,8 @@ export const getCurrentUser = async (req, res, next) => {
 export const logout = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
   });
 
   return res.status(200).json({
