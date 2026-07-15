@@ -13,7 +13,7 @@ import Categories from "../pages/categories/Categories";
 import Budgets from "../pages/budgets/Budgets";
 import RecurringTransactions from "../pages/recurring/RecurringTransactions";
 import Settings from "../pages/settings/Settings";
-
+import AIAssistant from "../pages/ai/AIAssistant";
 import NotFound from "../pages/NotFound";
 
 const AppRoutes = () => {
@@ -34,6 +34,9 @@ const AppRoutes = () => {
           }
         >
           <Route path="/dashboard" element={<Dashboard />} />
+
+          <Route path="/ai-assistant" element={<AIAssistant />}
+          />
 
           <Route path="/transactions" element={<Transactions />} />
 

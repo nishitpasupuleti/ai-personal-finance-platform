@@ -6,13 +6,14 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { name: "Dashboard", path: "/dashboard" },
-    { name: "Transactions", path: "/transactions" },
-    { name: "Categories", path: "/categories" },
-    { name: "Budgets", path: "/budgets" },
-    { name: "Recurring", path: "/recurring" },
-    { name: "Settings", path: "/settings" },
-  ];
+  { name: "Dashboard", path: "/dashboard" },
+  { name: "🤖 AI Assistant", path: "/ai-assistant" },
+  { name: "Transactions", path: "/transactions" },
+  { name: "Categories", path: "/categories" },
+  { name: "Budgets", path: "/budgets" },
+  { name: "Recurring", path: "/recurring" },
+  { name: "Settings", path: "/settings" },
+];
 
   const handleLogout = async () => {
     try {

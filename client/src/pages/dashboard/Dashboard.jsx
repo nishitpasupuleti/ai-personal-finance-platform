@@ -1,6 +1,7 @@
 import PageContainer from "../../components/common/PageContainer";
 
 import SummaryCards from "../../components/dashboard/SummaryCards";
+import DashboardAIBanner from "../../components/dashboard/DashboardAIBanner";
 import RecentTransactions from "../../components/dashboard/RecentTransactions";
 import MonthlyChart from "../../components/dashboard/MonthlyChart";
 import CategoryChart from "../../components/dashboard/CategoryChart";
@@ -26,17 +27,25 @@ const Dashboard = () => {
 
       <SummaryCards summary={dashboard.summary} />
 
-      <div className="mt-8 grid gap-8 xl:grid-cols-2">
-        <RecentTransactions
-          transactions={dashboard.recentTransactions}
-        />
+      {/* AI + Recent Transactions */}
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-12">
+        <div className="xl:col-span-4">
+          <DashboardAIBanner />
+        </div>
 
+        <div className="xl:col-span-8">
+          <RecentTransactions
+            transactions={dashboard.recentTransactions}
+          />
+        </div>
+      </div>
+
+      {/* Charts */}
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
         <MonthlyChart
           data={dashboard.monthlyAnalytics}
         />
-      </div>
 
-      <div className="mt-8">
         <CategoryChart
           data={dashboard.categoryAnalytics}
         />
