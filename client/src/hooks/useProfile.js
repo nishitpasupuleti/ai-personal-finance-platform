@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
 const useProfile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { setUser } = useAuth();
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -25,6 +27,7 @@ const useProfile = () => {
   const updateProfile = async (payload) => {
     const { data } = await api.patch("/users/profile", payload);
     setProfile(data.data);
+    setUser(data.data);
   };
 
   const updatePassword = async (payload) => {

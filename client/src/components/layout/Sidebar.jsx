@@ -1,9 +1,9 @@
 import { NavLink, useNavigate } from "react-router-dom";
-
-import api from "../../api/axios";
+import { useAuth } from "../../context/AuthContext";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const navItems = [
   { name: "Dashboard", path: "/dashboard" },
@@ -12,24 +12,19 @@ const Sidebar = () => {
   { name: "Categories", path: "/categories" },
   { name: "Budgets", path: "/budgets" },
   { name: "Recurring", path: "/recurring" },
-  { name: "Settings", path: "/settings" },
+  { name: "Profile", path: "/profile" },
 ];
 
   const handleLogout = async () => {
-    try {
-      await api.post("/auth/logout");
-    } catch (error) {
-      console.error(error);
-    } finally {
-      navigate("/login");
-    }
+    await logout();
+    navigate("/login");
   };
 
   return (
     <aside className="flex min-h-screen w-64 flex-col border-r bg-white p-6">
       <div>
-        <h1 className="mb-10 text-2xl font-bold">
-          Finance Tracker
+        <h1 className="mb-10 text-3xl font-black text-gray-900 tracking-tight">
+          FinPilot
         </h1>
 
         <nav className="space-y-2">

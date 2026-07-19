@@ -19,6 +19,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const logout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setUser(null);
+    }
+  };
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUser();
@@ -31,6 +41,7 @@ export const AuthProvider = ({ children }) => {
         setUser,
         loading,
         fetchUser,
+        logout,
         isAuthenticated: !!user,
       }}
     >
