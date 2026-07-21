@@ -19,6 +19,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const login = async (formData) => {
+    const { data } = await api.post("/auth/login", formData);
+    if (data?.data) {
+      setUser(data.data);
+    }
+    await fetchUser();
+    return data;
+  };
+
   const logout = async () => {
     try {
       await api.post("/auth/logout");
@@ -41,6 +50,7 @@ export const AuthProvider = ({ children }) => {
         setUser,
         loading,
         fetchUser,
+        login,
         logout,
         isAuthenticated: !!user,
       }}

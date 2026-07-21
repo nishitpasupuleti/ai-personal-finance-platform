@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../../api/axios";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login, isAuthenticated } = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -11,6 +12,12 @@ const Login = () => {
   });
 
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -24,7 +31,7 @@ const Login = () => {
 
     try {
       setLoading(true);
-      await api.post("/auth/login", formData);
+      await login(formData);
       navigate("/dashboard");
     } catch (error) {
       alert(error.response?.data?.message || "Login failed");
