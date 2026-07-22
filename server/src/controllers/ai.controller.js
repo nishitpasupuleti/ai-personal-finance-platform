@@ -58,3 +58,47 @@ ${JSON.stringify(financialSummary, null, 2)}
     next(error);
   }
 };
+
+export const askAIChat = async (req, res, next) => {
+  try {
+    const { message } = req.body;
+
+    if (!message) {
+      return res.status(400).json({
+        success: false,
+        message: "Message is required.",
+      });
+    }
+
+    const financialSummary = await getFinancialSummary(req.user.id);
+
+    const prompt = `You are an expert financial advisor and data analyst assistant.
+The user is asking you a question about their finances.
+Use their financial summary data below to answer their query accurately, contextually, and helpfully.
+
+### Core Directives
+1. **Strict Grounding:** Base your answers on the provided JSON data. If the user asks about budgets, transactions, categories, or overall financial status, use the real values. If some configuration is missing (e.g. no budgets or recurring transactions), point it out politely.
+2. **Formatting Specs:** Return raw Markdown text. Do NOT wrap the output in \`\`\`markdown backticks and do NOT include any conversational filler.
+3. **Typography:** Use "₹" for all monetary values. Format numbers using the standard Indian numbering system (e.g., ₹1,00,000). **Bold** all critical numbers, percentages, categories, and key terms.
+4. **Length & Tone:** Keep the tone crisp, objective, helpful, and professional.
+
+### Financial Summary Data
+${JSON.stringify(financialSummary, null, 2)}
+
+### User's Message
+"${message}"
+`;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.1-flash-lite",
+      contents: prompt,
+    });
+
+    return res.status(200).json({
+      success: true,
+      response: response.text,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
